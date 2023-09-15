@@ -10,6 +10,8 @@ import {
 import initACVM, { executeCircuit, compressWitness } from '@noir-lang/acvm_js';
 import { ethers } from 'ethers'; // I'm lazy so I'm using ethers to pad my input
 import circuit from '../../../noir-app/circuits/target/ageVerifier.json';
+import { hashMessage } from 'ethers/lib/utils';
+import { Fr } from '@/types/node/types';
 
 export class NoirBrowser {
   acir: string = '';
@@ -17,7 +19,7 @@ export class NoirBrowser {
   acirBufferUncompressed: Uint8Array = Uint8Array.from([]);
 
   api = {} as Barretenberg;
-  acirComposer = {} as any;
+  acirComposer = {} as any ;
 
   async init() {
     await initACVM();
@@ -45,10 +47,31 @@ export class NoirBrowser {
     this.acirComposer = await this.api.acirNewAcirComposer(subgroupSize);
   }
 
+
+  async generateBirthYearHash(year: any): Promise<string>{
+    
+    await this.api.pedersenHashInit();
+    try {
+      // Convert the input value 1998 to a field
+      const inputValue = new Fr(BigInt(year));
+
+      // Calculate the Pedersen hash
+      const result = await this.api.pedersenPlookupCompress([inputValue]);
+
+      return result.toString()
+
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    return ''
+  }
+
   async generateWitness(input: any): Promise<Uint8Array> {
     const initialWitness = new Map<number, string>();
-    initialWitness.set(1, ethers.utils.hexZeroPad(`0x${input.x.toString(16)}`, 32));
-    initialWitness.set(2, ethers.utils.hexZeroPad(`0x${input.y.toString(16)}`, 32));
+    const birthYearHash = await this.generateBirthYearHash(input.birthYear)
+    initialWitness.set(1, ethers.utils.hexZeroPad(`0x${input.age.toString(16)}`, 32));
+    initialWitness.set(2, ethers.utils.hexZeroPad(`0x${input.birthYear.toString(16)}`, 32));
+    initialWitness.set(3, birthYearHash);
 
     const witnessMap = await executeCircuit(this.acirBuffer, initialWitness, () => {
       throw Error('unexpected oracle');

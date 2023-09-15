@@ -12,6 +12,6 @@ fn main(age : u32, birth_year: Field , hash : pub Field) {
 #[test]
 fn test_main() {
     let birth_hash = std::hash::pedersen([1998]);
-    std::println(birth_hash[0]);
+    std::println(birth_hash);
     main(25, 1998, birth_hash[0]);
 }

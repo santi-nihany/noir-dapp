@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import addresses from './addresses.json';
-import artifacts from '../artifacts/circuits/contract/ageVerifier/plonk_vk.sol/UltraVerifier.json';
+import artifacts from '../../noir-app/out/plonk_vk.sol/UltraVerifier.json';
 import { toast } from 'react-hot-toast';
 
 declare global {
@@ -38,11 +38,11 @@ class Ethers {
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: `0x${addresses.chainId.toString(16)}` }],
           });
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error switching network:', error);
-          if (error.code === 4902) {
-            toast(`Please add the mumbai network to your MetaMask wallet`, {
-              type: 'error',
+          if (error.code  === 4902) {
+            toast.error(`Please add the mumbai network to your MetaMask wallet`, {
+              icon: '❌',
             });
           } else {
             console.error('User rejected the request.');

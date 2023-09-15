@@ -10,6 +10,7 @@ import {
 import { executeCircuit, compressWitness } from '@noir-lang/acvm_js';
 import { ethers } from 'ethers'; // I'm lazy so I'm using ethers to pad my input
 import circuit from '../../../noir-app/circuits/target/ageVerifier.json';
+import { Ptr } from '@/types/node/types';
 
 
 export class NoirNode {
@@ -18,7 +19,7 @@ export class NoirNode {
   acirBufferUncompressed: Uint8Array = Uint8Array.from([]);
 
   api = {} as Barretenberg;
-  acirComposer = {} as any;
+  acirComposer = {} as Ptr;
 
   async init() {
     // TODO disabled until we get a fix for std

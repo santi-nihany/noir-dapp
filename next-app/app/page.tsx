@@ -4,23 +4,12 @@ import Ethers from '../utils/ethers';
 import React from 'react';
 import { NoirBrowser } from '../utils/noir/noirBrowser';
 import toast from 'react-hot-toast';
+import { myFunction } from '../utils/testPedersen'
 
 export default function Home() {
   const inputAge = useRef<HTMLInputElement>(null);
   const inputBirthYear = useRef<HTMLInputElement>(null);
 
-  const handleSubmit1 = async () => {
-    const age = inputAge.current?.value;
-    if (!age) {
-      return alert("Please enter your age");
-    } else {
-      if (parseInt(age) < 18) {
-        alert("You are not old enough to enter this site");
-      } else {
-        alert("Welcome!");
-      }
-    }
-  };
   const [input, setInput] = useState({ age: 0, birthYear: 0 });
   const [pending, setPending] = useState(false);
   const [proof, setProof] = useState(Uint8Array.from([]));
@@ -40,38 +29,38 @@ export default function Home() {
     //   console.log(err);
     //   toast.error('Error generating proof');
     // }
-
+    await myFunction();
   };
 
-  // const verifyProof = async () => {
-  //   // only launch if we do have an acir and a proof to verify
-  //   if (proof) {
-  //     try {
-  //       const verification = await noir.verifyProof(proof);
-  //       setVerification(verification);
-  //       toast.success('Proof verified!');
+  const verifyProof = async () => {
+    // only launch if we do have an acir and a proof to verify
+    if (proof) {
+      try {
+        const verification = await noir.verifyProof(proof);
+        setVerification(verification);
+        toast.success('Proof verified!');
 
-  //       const ethers = new Ethers();
-  //       const publicInputs = proof.slice(0, 32);
-  //       const slicedProof = proof.slice(32);
+        const ethers = new Ethers();
+        const publicInputs = proof.slice(0, 32);
+        const slicedProof = proof.slice(32);
 
-  //       const ver = await ethers.contract.verify(slicedProof, [publicInputs]);
-  //       if (ver) {
-  //         toast.success('Proof verified on-chain!');
-  //         setVerification(true);
-  //       } else {
-  //         toast.error('Proof failed on-chain verification');
-  //         setVerification(false);
-  //       }
-  //     } catch (err) {
-  //       toast.error('Error verifying your proof');
-  //     } finally {
-  //       noir.destroy();
-  //     }
-  //   }
-  // };
+        const ver = await ethers.contract.verify(slicedProof, [publicInputs]);
+        if (ver) {
+          toast.success('Proof verified on-chain!');
+          setVerification(true);
+        } else {
+          toast.error('Proof failed on-chain verification');
+          setVerification(false);
+        }
+      } catch (err) {
+        toast.error('Error verifying your proof');
+      } finally {
+        noir.destroy();
+      }
+    }
+  };
 
-  // // Verifier the proof if there's one in state
+  // Verifier the proof if there's one in state
   // useEffect(() => {
   //   if (proof.length > 0) {
   //     verifyProof();
