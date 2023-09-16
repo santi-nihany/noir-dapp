@@ -4,7 +4,6 @@ import Ethers from '../utils/ethers';
 import React from 'react';
 import { NoirBrowser } from '../utils/noir/noirBrowser';
 import toast from 'react-hot-toast';
-import { myFunction } from '../utils/testPedersen'
 
 export default function Home() {
   const inputAge = useRef<HTMLInputElement>(null);
@@ -19,17 +18,22 @@ export default function Home() {
   // Calculates proof
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    if(!inputBirthYear.current?.value || !inputAge.current?.value ) return
+
     setInput({age: parseInt(inputAge.current?.value || "0"), birthYear: parseInt(inputBirthYear.current?.value || "0")})  
     console.log(input);
-    // try {
-    //   const witness = await noir.generateWitness(input);
-    //   const proof = await noir.generateProof(witness);
-    //   setProof(proof);
-    // } catch (err) {
-    //   console.log(err);
-    //   toast.error('Error generating proof');
-    // }
-    await myFunction();
+
+    try {
+      const witness = await noir.generateWitness(input);
+      console.log('witness: ',witness);
+      const proof = await noir.generateProof(witness);
+      setProof(proof);
+      console.log(proof);
+      toast.success('Proof generated!');
+    } catch (err) {
+      console.log(err);
+      toast.error('Error generating proof');
+    }
   };
 
   const verifyProof = async () => {
@@ -68,16 +72,17 @@ export default function Home() {
   // }, [proof]);
 
   // const initNoir = async () => {
-  //   setPending(true);
 
   //   await noir.init();
+  //   console.log('noir init');
   //   setNoir(noir);
 
-  //   setPending(false);
   // };
 
   // useEffect(() => {
+  //   console.log('hola initNoir()');
   //   initNoir();
+    
   // }, [proof]);
 
   return (

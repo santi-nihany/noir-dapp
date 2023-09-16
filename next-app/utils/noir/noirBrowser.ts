@@ -7,11 +7,10 @@ import {
   RawBuffer,
   // @ts-ignore
 } from '@aztec/bb.js';
+import { ethers } from 'ethers';
 import initACVM, { executeCircuit, compressWitness } from '@noir-lang/acvm_js';
-import { ethers } from 'ethers'; // I'm lazy so I'm using ethers to pad my input
+import { Fr, Ptr } from '@/types/node/types';
 import circuit from '../../../noir-app/circuits/target/ageVerifier.json';
-import { hashMessage } from 'ethers/lib/utils';
-import { Fr } from '@/types/node/types';
 
 export class NoirBrowser {
   acir: string = '';
@@ -19,45 +18,46 @@ export class NoirBrowser {
   acirBufferUncompressed: Uint8Array = Uint8Array.from([]);
 
   api = {} as Barretenberg;
-  acirComposer = {} as any ;
+  acirComposer = {} as Ptr ;
 
   async init() {
     await initACVM();
-    // TODO disabled until we get a fix for std
-    // const compiled_noir = compile({
-    //   entry_point: `${__dirname}/../../circuits/src/main.nr`,
-    // });
+    
     this.acirBuffer = Buffer.from(circuit.bytecode, 'base64');
     this.acirBufferUncompressed = decompressSync(this.acirBuffer);
 
     this.api = await Barretenberg.new(4);
-
+    console.log('acirBuffer: ', this.acirBuffer);
+    console.log('acirBufferUncompressed: ', this.acirBufferUncompressed);
     const [exact, total, subgroup] = await this.api.acirGetCircuitSizes(
       this.acirBufferUncompressed,
     );
+    
     const subgroupSize = Math.pow(2, Math.ceil(Math.log2(total)));
     const crs = await Crs.new(subgroupSize + 1);
+    
     await this.api.commonInitSlabAllocator(subgroupSize);
     await this.api.srsInitSrs(
       new RawBuffer(crs.getG1Data()),
       crs.numPoints,
       new RawBuffer(crs.getG2Data()),
     );
-
+    
     this.acirComposer = await this.api.acirNewAcirComposer(subgroupSize);
   }
 
 
   async generateBirthYearHash(year: any): Promise<string>{
-    
-    await this.api.pedersenHashInit();
+    const apiPed = await Barretenberg.new(1);
     try {
+      await apiPed.pedersenHashInit();
       // Convert the input value 1998 to a field
       const inputValue = new Fr(BigInt(year));
 
       // Calculate the Pedersen hash
-      const result = await this.api.pedersenPlookupCompress([inputValue]);
-
+      const result = await apiPed.pedersenPlookupCompress([inputValue]);
+      console.log('hashed result: ',result.toString());
+      
       return result.toString()
 
     } catch (error) {
@@ -72,7 +72,11 @@ export class NoirBrowser {
     initialWitness.set(1, ethers.utils.hexZeroPad(`0x${input.age.toString(16)}`, 32));
     initialWitness.set(2, ethers.utils.hexZeroPad(`0x${input.birthYear.toString(16)}`, 32));
     initialWitness.set(3, birthYearHash);
-
+    console.log(input);
+    
+    console.log('initial witness: ',initialWitness.values());
+    console.log('acirBuffer: ', this.acirBuffer.toString());
+    
     const witnessMap = await executeCircuit(this.acirBuffer, initialWitness, () => {
       throw Error('unexpected oracle');
     });
