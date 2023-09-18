@@ -71,19 +71,19 @@ export default function Home() {
   //   }
   // }, [proof]);
 
-  // const initNoir = async () => {
+  const initNoir = async () => {
 
-  //   await noir.init();
-  //   console.log('noir init');
-  //   setNoir(noir);
+    await noir.init();
+    console.log('noir init');
+    setNoir(noir);
 
-  // };
+  };
 
-  // useEffect(() => {
-  //   console.log('hola initNoir()');
-  //   initNoir();
+  useEffect(() => {
+    console.log('hola initNoir()');
+    initNoir();
     
-  // }, [proof]);
+  }, [proof]);
 
   return (
     <div>

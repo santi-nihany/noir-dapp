@@ -9,7 +9,7 @@ import {
 } from '@aztec/bb.js';
 import { ethers } from 'ethers';
 import initACVM, { executeCircuit, compressWitness } from '@noir-lang/acvm_js';
-import { Fr, Ptr } from '@/types/node/types';
+import { Fr, Ptr } from '@/types/node/types'; // should be: '@aztec/bb.js/dest/node/types'
 import circuit from '../../../noir-app/circuits/target/ageVerifier.json';
 
 export class NoirBrowser {

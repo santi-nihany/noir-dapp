@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@aztec/bb.js": "^0.5.1",
+    "@aztec/bb.js": "^0.7.2",
     "@noir-lang/acvm_js": "git+https://git@github.com/noir-lang/acvm-js-wasm.git#b9d9ca9dfc5140839f23998d9466307215607c42",
     "@types/node": "20.6.0",
     "@types/react": "18.2.21",

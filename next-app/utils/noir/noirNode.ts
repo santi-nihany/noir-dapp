@@ -8,9 +8,9 @@ import {
   // @ts-ignore
 } from '@aztec/bb.js';
 import { executeCircuit, compressWitness } from '@noir-lang/acvm_js';
-import { ethers } from 'ethers'; // I'm lazy so I'm using ethers to pad my input
+import { ethers } from 'ethers'; 
 import circuit from '../../../noir-app/circuits/target/ageVerifier.json';
-import { Fr, Ptr } from '@/types/node/types';
+import { Fr, Ptr } from '@/types/node/types';// should be: '@aztec/bb.js/dest/node/types'
 
 
 export class NoirNode {
