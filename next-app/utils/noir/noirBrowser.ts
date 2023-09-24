@@ -18,32 +18,43 @@ export class NoirBrowser {
   acirBufferUncompressed: Uint8Array = Uint8Array.from([]);
 
   api = {} as Barretenberg;
-  acirComposer = {} as Ptr ;
+  acirComposer = {} as any ;
 
   async init() {
-    await initACVM();
+    console.log(typeof window !== 'undefined');
+    
+    const res =await initACVM();
+    console.log('response: ',res);
     
     this.acirBuffer = Buffer.from(circuit.bytecode, 'base64');
     this.acirBufferUncompressed = decompressSync(this.acirBuffer);
 
-    this.api = await Barretenberg.new(4);
+    this.api = (await Barretenberg.new(4)) as Barretenberg;
     console.log('acirBuffer: ', this.acirBuffer);
     console.log('acirBufferUncompressed: ', this.acirBufferUncompressed);
-    const [exact, total, subgroup] = await this.api.acirGetCircuitSizes(
-      this.acirBufferUncompressed,
-    );
+    try{
+      console.log('api: ',this.api);
+      
+      const [exact, total, subgroup] = await this.api.acirGetCircuitSizes(
+        this.acirBufferUncompressed,
+        );
+        
+    }catch(e){
+      console.log('error: ',e);
+    }
     
-    const subgroupSize = Math.pow(2, Math.ceil(Math.log2(total)));
-    const crs = await Crs.new(subgroupSize + 1);
     
-    await this.api.commonInitSlabAllocator(subgroupSize);
-    await this.api.srsInitSrs(
-      new RawBuffer(crs.getG1Data()),
-      crs.numPoints,
-      new RawBuffer(crs.getG2Data()),
-    );
+    // const subgroupSize = Math.pow(2, Math.ceil(Math.log2(total)));
+    // const crs = await Crs.new(subgroupSize + 1);
     
-    this.acirComposer = await this.api.acirNewAcirComposer(subgroupSize);
+    // await this.api.commonInitSlabAllocator(subgroupSize);
+    // await this.api.srsInitSrs(
+    //   new RawBuffer(crs.getG1Data()),
+    //   crs.numPoints,
+    //   new RawBuffer(crs.getG2Data()),
+    // );
+    
+    // this.acirComposer = await this.api.acirNewAcirComposer(subgroupSize);
   }
 
 

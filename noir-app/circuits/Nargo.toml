@@ -2,5 +2,5 @@
 name = "ageVerifier"
 type = "bin"
 authors = [""]
-compiler_version = "0.9.0"
+compiler_version = "0.10.5"
 [dependencies]

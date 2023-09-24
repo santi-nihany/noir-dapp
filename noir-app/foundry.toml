@@ -11,4 +11,4 @@ optimizer = true
 src = "contracts"
 libs = ["lib"]
 ffi = true
-fs_permissions = [{ access = "read-write", path = "./"}]
+fs_permissions = [{ access = "read-write", path = "./" }]
