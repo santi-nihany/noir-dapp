@@ -2,7 +2,7 @@
 import { useRef, useState, useEffect } from "react";
 import Ethers from '../utils/ethers';
 import React from 'react';
-import { NoirBrowser } from '../utils/noir/noirBrowser';
+import { Noir } from '../utils/noir';
 // import { Noir } from '../utils/noir';
 import toast from 'react-hot-toast';
 
@@ -14,7 +14,7 @@ export default function Home() {
   const [pending, setPending] = useState(false);
   const [proof, setProof] = useState(Uint8Array.from([]));
   const [verification, setVerification] = useState(false);
-  const [noir, setNoir] = useState(new NoirBrowser());
+  const [noir, setNoir] = useState(new Noir());
   // const [noir, setNoir] = useState(new Noir());
 
 
